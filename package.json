@@ -1,0 +1,40 @@
+{
+  "name": "@ingsystemcix/express-cli",
+  "description": "A CLI tool for generating Express.js applications",
+  "version": "1.0.2",
+  "main": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "express-cli": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.13.17",
+    "tsx": "^4.19.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "author": "Juan Bladimir Romero Collazos",
+  "license": "MIT",
+  "dependencies": {
+    "@types/cli-progress": "^3.11.6",
+    "chalk": "^5.4.1",
+    "cli-progress": "^3.12.0",
+    "commander": "^13.1.0",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IngSystemCix/express-cli.git"
+  },
+  "keywords": [
+    "express",
+    "cli",
+    "typescript"
+  ]
+}
