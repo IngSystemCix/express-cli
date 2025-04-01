@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "type": "module",
   "bin": {
-    "express-cli": "./src/index.ts"
+    "express-cli": "bun ./src/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
