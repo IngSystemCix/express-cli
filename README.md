@@ -4,8 +4,11 @@
 
 ## Changelog
 
+### v1.0.5 (2025-04-01)
+- Corregidos los errores de la versión 1.0.4.
+
 ### v1.0.4 (2025-04-01)
-- Corregidos los errores de la versión 1.0.3.
+- Versión con errores conocidos. **No utilizar esta versión**.
 
 ### v1.0.3 (2025-04-01)
 - Versión con errores conocidos. **No utilizar esta versión**.
