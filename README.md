@@ -4,6 +4,10 @@
 
 ## Changelog
 
+### v1.0.7 (2025-04-01)
+- Corregidos los errores de la versión 1.0.6.
+- Se implemento un nuevo diseño mas compacto.
+
 ### v1.0.6 (2025-04-01)
 - Corregidos los errores de la versión 1.0.5.
 

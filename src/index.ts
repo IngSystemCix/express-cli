@@ -2,33 +2,39 @@
 import { Command } from "commander";
 import inquirer from "inquirer";
 import { generateProject } from "./generator";
-import chalk from "chalk";
-import { SingleBar } from "cli-progress"; // Importamos SingleBar de cli-progress
-import { execa } from "execa"; // Necesitamos execa para ejecutar comandos como bun
+import chalk, { type ChalkInstance } from "chalk";
+import boxen from "boxen";
+import { SingleBar } from "cli-progress";
+import { execa } from "execa";
 
 const program = new Command();
 
-// Banner
-const banner = `
- /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\ 
-( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )
- > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ < 
- /\\_/\\                                                                        /\\_/\\ 
-( o.o )   _____                                                              ( o.o )
- > ^ <   | ______  ___ __  _ __ ___ ___ ___                                   > ^ < 
- /\\_/\\   |  _| \\ \\/ | '_ \\| '__/ _ / __/ __|                                  /\\_/\\ 
-( o.o )  | |___ >  <| |_) | | |  __\\__ \\__ \\                                 ( o.o )
- > ^ <   |_____/_/\\_| .__/|_|  \\___|___|___/                                  > ^ < 
- /\\_/\\     ____     |_|                   _                ____ _     ___     /\\_/\\ 
-( o.o )   / ___| ___ _ __   ___ _ __ __ _| |_ ___  _ __   / ___| |   |_ _|   ( o.o )
- > ^ <   | |  _ / _ | '_ \\ / _ | '__/ _\` | __/ _ \\| '__| | |   | |    | |     > ^ < 
- /\\_/\\   | |_| |  __| | | |  __| | | (_| | || (_) | |    | |___| |___ | |     /\\_/\\ 
-( o.o )   \\____|\\___|_| |_|\___||_|  \\__,_|\\__\\___/|_|     \\____|_____|___|   ( o.o )
- > ^ <                                                                        > ^ < 
- /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\  /\\_/\\ 
-( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )( o.o )
- > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ <  > ^ < 
-`;
+// Función para crear etiquetas tipo Astro
+const tag = (label: string, color: ChalkInstance) => chalk.bold.inverse(color(` ${label} `));
+
+// Función para generar un color en arcoíris
+const rainbowBar = (percent: number) => {
+  const colors = [
+    chalk.red,
+    chalk.yellow,
+    chalk.green,
+    chalk.cyan,
+    chalk.blue,
+    chalk.magenta,
+    chalk.white,
+  ];
+  return colors[Math.floor((percent / 100) * colors.length)](percent + "%");
+};
+
+// Banner con boxen
+const bannerText = `CLI para generar un proyecto Express\n@v1.0.7 - @IngSystemCix`;
+const banner = boxen(bannerText, {
+  padding: 1,
+  borderColor: "green",
+  borderStyle: "round",
+  title: "Express Generator",
+  titleAlignment: "center",
+});
 
 program
   .command("generate")
@@ -38,17 +44,17 @@ program
   .description("CLI para generar un proyecto Express")
   .action(async () => {
     // Mostrar el banner
-    console.log(chalk.green(banner));
+    console.log(banner);
 
     // Bienvenida
-    console.log(chalk.blue("¡Bienvenido a Express Generator CLI! @v1.0.0 @IngSystemCix"));
+    console.log(`${tag("info", chalk.blue)} Bienvenido a Express Generator CLI!`);
 
     // Preguntar el nombre del proyecto
     const { projectName } = await inquirer.prompt([
       {
         type: "input",
         name: "projectName",
-        message: "¿Cómo deseas llamar a tu proyecto?",
+        message: `${tag("dir", chalk.magenta)} ¿Cómo deseas llamar a tu proyecto?`,
         default: "my-express-app",
       },
     ]);
@@ -58,7 +64,7 @@ program
       {
         type: "list",
         name: "language",
-        message: "¿Qué lenguaje deseas usar?",
+        message: `${tag("lang", chalk.cyan)} ¿Qué lenguaje deseas usar?`,
         choices: ["JavaScript", "TypeScript"],
       },
     ]);
@@ -68,60 +74,71 @@ program
       {
         type: "confirm",
         name: "confirmCreate",
-        message: `¿Estás seguro de que deseas crear el proyecto "${projectName}" con ${language}?`,
+        message: `${tag("confirm", chalk.yellow)} ¿Crear el proyecto "${projectName}" con ${language}?`,
         default: true,
       },
     ]);
 
-    // Si el usuario confirma, generamos el proyecto
     if (confirmCreate) {
-      try {
-        console.log(chalk.green(`🚀 Creando el proyecto "${projectName}"...`));
+      // Preguntar si desea inicializar un repositorio Git
+      const { initGit } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "initGit",
+          message: `${tag("git", chalk.green)} ¿Deseas inicializar un repositorio Git?`,
+          default: true,
+        },
+      ]);
 
-        // Crear y configurar el progress bar
+      try {
+        console.log(`${tag("Express", chalk.green)} 🚀 Creando el proyecto "${projectName}"...`);
+
         const progressBar = new SingleBar({
-          format: '{bar} {percentage}% | {value}/{total} archivos',
-          barCompleteChar: '\u2588',
-          barIncompleteChar: '\u2591',
+          format: `\n${chalk.green("{bar}")} ${chalk.yellow("{percentage}%")} | ${chalk.cyan("{value}/{total}")} pasos\n\n`,
+          barCompleteChar: "\u2588",
+          barIncompleteChar: "\u2591",
+          fps: 60
         });
 
-        // Establecer el total de pasos (en este caso 3, uno por cada fase importante)
         progressBar.start(3, 0);
 
-        // Paso 1: Generar el proyecto
         await generateProject({ language, projectName });
-        progressBar.update(1); // Actualizar el progreso
+        progressBar.update(1);
 
-        // Paso 2: Instalar dependencias
-        console.log(chalk.yellow('Instalando dependencias...'));
-        
-        // Usamos execa para correr el comando 'bun init' y esperamos a que termine
-        const { stdout, stderr } = await execa("bun", ["init"], {
+        console.log(`${tag("bun", chalk.yellow)} Instalando dependencias con bun...`);
+
+        const { stdout, stderr } = await execa("bun", ["init", "-y"], {
           cwd: projectName,
           stdio: "inherit",
         });
-        
+
         if (stderr) {
-          console.log(chalk.red("❌ Error al inicializar el proyecto."));
+          console.log(`${tag("error", chalk.red)} Error al inicializar el proyecto.`);
           console.error(stderr);
           return;
         }
 
-        console.log(stdout); // Mostrar la salida del comando
-        progressBar.update(2); // Actualizar el progreso después de la inicialización
+        console.log(stdout);
+        progressBar.update(2);
 
-        // Paso 3: Finalización
-        console.log(chalk.green('Configuración completa.'));
-        progressBar.update(3); // Última actualización
-        progressBar.stop(); // Detener el progress bar
+        console.log(`${tag("done", chalk.green)} Configuración completa.`);
+        progressBar.update(3);
+        progressBar.stop();
 
-        console.log(chalk.blue(`✅ Proyecto "${projectName}" generado con éxito.`));
+        // Inicializar el repositorio Git si el usuario lo desea
+        if (initGit) {
+          console.log(`${tag("git", chalk.green)} Inicializando el repositorio Git...`);
+          await execa("git", ["init"], { cwd: projectName, stdio: "inherit" });
+          console.log(`${tag("git", chalk.green)} Repositorio Git inicializado.`);
+        }
+
+        console.log(`${tag("success", chalk.blue)} Proyecto "${projectName}" generado con éxito.`);
       } catch (err) {
-        console.log(chalk.red("❌ Ocurrió un error al generar el proyecto."));
+        console.log(`${tag("error", chalk.red)} Ocurrió un error al generar el proyecto.`);
         console.error(err);
       }
     } else {
-      console.log(chalk.yellow("🛑 Operación cancelada por el usuario."));
+      console.log(`${tag("cancel", chalk.gray)} Operación cancelada por el usuario.`);
     }
   });
 

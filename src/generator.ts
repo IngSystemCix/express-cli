@@ -38,7 +38,7 @@ export async function generateProject(answers: {
   }
 
   // Inicializar `package.json` con `bun`
-  await execa("bun", ["init"], { cwd: projectPath, stdio: "inherit" });
+  await execa("bun", ["init", "-y"], { cwd: projectPath, stdio: "inherit" });
 
   // Instalar Express y dependencias con `bun`
   const deps = ["express", "cors", "dotenv"];
@@ -59,8 +59,8 @@ export async function generateProject(answers: {
   let fileContent;
 
   if (useTS) {
-    fileContent = `
-import express from "express";
+    fileContent = 
+    `import express from "express";
 import type { Request, Response } from "express";
 
 const app = express();
@@ -75,8 +75,8 @@ app.listen(PORT, () => {
 });
     `;
   } else {
-    fileContent = `
-import express from 'express';
+    fileContent = 
+    `import express from 'express';
 
 const app = express();
 const PORT = 3000;
