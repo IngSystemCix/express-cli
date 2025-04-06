@@ -2,6 +2,8 @@
 
 `@ingsystemcix/express-cli` es una herramienta de línea de comandos (CLI) para generar aplicaciones Express.js rápidamente. Con esta CLI, puedes crear proyectos de Express en JavaScript o TypeScript y configurar todo el entorno con las dependencias necesarias, lo que hace que el proceso de inicio de un nuevo proyecto sea más eficiente.
 
+![TERMINAL EJECUCIÓN DE LA CREACIÓN DEL PROYECTO](./assets/presentation.png)
+
 ## Changelog
 
 ### v1.0.7 (2025-04-01)
